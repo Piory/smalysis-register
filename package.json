@@ -1,7 +1,20 @@
 {
   "name": "smalysis-register",
   "version": "0.1.0",
+  "author": "Piory",
+  "description": "Smalysis Register",
   "private": true,
+  "homepage": ".",
+  "main": "build/electron/main.js",
+  "build": {
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
   "dependencies": {
     "electron-is-dev": "^1.2.0",
     "electron-reload": "^1.5.0",
@@ -25,6 +38,9 @@
     "wait-on": "^5.2.0"
   },
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "electron:dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
+    "electron:build": "npm build && tsc -p electron && electron-builder",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
