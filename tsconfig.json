@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
     "baseUrl": "src",
     "lib": [
+      "es2020",
       "dom",
       "dom.iterable",
       "esnext"
