@@ -1,8 +1,8 @@
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import App from 'App';
+import App from 'main/component/App';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import reportWebVitals from 'reportWebVitals';
+import reportWebVitals from 'main/reportWebVitals';
 
 const theme = createMuiTheme({
   palette: {
