@@ -5,7 +5,7 @@
   "description": "Smalysis Register",
   "private": true,
   "homepage": ".",
-  "main": "build/electron/main.js",
+  "main": "build/electron/main/main.js",
   "build": {
     "extends": null,
     "files": [
