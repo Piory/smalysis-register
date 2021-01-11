@@ -11,5 +11,9 @@
     "typeRoots": [
       "node_modules/@types"
     ]
-  }
+  },
+  "include": [
+    "main",
+    "test"
+  ]
 }
