@@ -1,3 +1,4 @@
+import { RecoilRoot } from 'recoil';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import App from 'main/component/App';
 import React from 'react';
@@ -14,7 +15,9 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <App />
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root'),

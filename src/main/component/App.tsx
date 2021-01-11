@@ -1,12 +1,21 @@
 import React from 'react';
 
 import { Button } from '@material-ui/core';
+import { useRecoilState } from 'recoil';
+import countAtom from 'main/atoms/countAtoms';
 
 const App: React.FC = (): JSX.Element => {
+  const [count, setCount] = useRecoilState(countAtom);
   return (
-    <Button variant='contained' color='primary' onClick={() => window.api.analyzeResult()}>
-      OCR
-    </Button>
+    <div>
+      <Button variant='contained' color='primary' onClick={() => setCount(count - 1)}>
+        Down
+      </Button>
+      {count}
+      <Button variant='contained' color='primary' onClick={() => setCount(count + 1)}>
+        Up
+      </Button>
+    </div>
   );
 };
 
