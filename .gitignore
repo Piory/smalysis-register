@@ -114,3 +114,4 @@ sketch
 # Electron
 build
 dist
+venv
