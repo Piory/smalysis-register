@@ -115,3 +115,4 @@ sketch
 build
 dist
 venv
+__pycache__
