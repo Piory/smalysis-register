@@ -4,6 +4,7 @@ import os
 import cv2
 import numpy as np
 
+from constant.Constant import Constant
 from util.FileUtil import FileUtil
 
 
@@ -11,7 +12,7 @@ class CharacterKnn:
     def __init__(self, characterImageDirectoryPath: str):
         characterCellImages = [self.__CharacterCellImage(FileUtil.getFileNameExcludeExtension(path), cv2.imread(path, cv2.IMREAD_GRAYSCALE)) for path in glob.glob(os.path.join(characterImageDirectoryPath, '*.png'))]
 
-        samples = np.empty((0, 100 * 100))
+        samples = np.empty((0, Constant.CHARACTER_IMAGE_HEIGHT * Constant.CHARACTER_IMAGE_WIDTH))
         labels = []
         for characterCellImage in characterCellImages:
             for i in range(characterCellImage.characterImageCount):
@@ -30,8 +31,7 @@ class CharacterKnn:
 
     def findNearest(self, characterImage, k: int) -> str:
         sample = characterImage.reshape((1, -1))
-        s = np.array(sample, np.float32)
-        retval, result, neigh_resp, dists = self.knn.findNearest(s, k)
+        retval, result, neigh_resp, dists = self.knn.findNearest(np.array(sample, np.float32), k)
         return chr(int(retval))
 
     class __CharacterCellImage:
@@ -49,8 +49,8 @@ class CharacterKnn:
         @staticmethod
         def __getCells(tileImage):
             height, width = tileImage.shape[:2]
-            tile = np.array([np.hsplit(row, int(width / 100)) for row in np.vsplit(tileImage, int(height / 100))])
-            return tile.reshape((-1, 100, 100))
+            tile = np.array([np.hsplit(row, int(width / Constant.CHARACTER_IMAGE_WIDTH)) for row in np.vsplit(tileImage, int(height / Constant.CHARACTER_IMAGE_HEIGHT))])
+            return tile.reshape((-1, Constant.CHARACTER_IMAGE_HEIGHT, Constant.CHARACTER_IMAGE_WIDTH))
 
         @staticmethod
         def __countCharacterImage(cells) -> int:

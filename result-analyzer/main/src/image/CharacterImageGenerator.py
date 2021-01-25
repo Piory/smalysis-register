@@ -4,6 +4,7 @@ import os
 import cv2
 import numpy as np
 
+from constant.Constant import Constant
 from util.ImageUtil import ImageUtil
 
 
@@ -15,7 +16,7 @@ class CharacterImageGenerator:
 
     def concatCharacterTile(self, horizontalImageCount: int, outputImagePath: str) -> None:
         rowCount = np.ceil(len(self.images) / horizontalImageCount).astype(int)
-        characterTile = np.zeros((rowCount * horizontalImageCount, 100, 100))
+        characterTile = np.zeros((rowCount * horizontalImageCount, Constant.CHARACTER_IMAGE_HEIGHT, Constant.CHARACTER_IMAGE_WIDTH))
         for i in range(len(self.images)):
             characterTile[i] = self.images[i]
         cv2.imwrite(outputImagePath, ImageUtil.concatTile(np.vsplit(characterTile, rowCount)))
