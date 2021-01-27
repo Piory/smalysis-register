@@ -92,6 +92,8 @@ class SmashBrosResultAnalyzer:
         firstCharacter = characterResults[characterResults[:, 0] == characterResults[:, 0].min()]
         # 1列目と2列目のファイター名取得
         fighterNameRow1 = SmashBrosResultAnalyzer.__sortFighterName(characterResults[characterResults[:, 1] <= firstCharacter[0, 1]])
+        if fighterNameRow1 is None:
+            return None
         fighterNameRow2 = SmashBrosResultAnalyzer.__sortFighterName(characterResults[characterResults[:, 1] > firstCharacter[0, 1]])
         return fighterNameRow1 + fighterNameRow2 if fighterNameRow2 is not None else fighterNameRow1
 
