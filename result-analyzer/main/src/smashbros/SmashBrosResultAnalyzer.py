@@ -11,22 +11,24 @@ from util.ImageUtil import ImageUtil
 
 
 class SmashBrosResultAnalyzer:
-    def __init__(self, characterKnn: CharacterKnn):
+    def __init__(self, characterKnn: CharacterKnn, isRectangle: bool):
         self.characterKnn = characterKnn
+        self.isRectangle = isRectangle
 
-    def analysisResult(self, resultImage) -> SmashBrosResultInfo:
-        binarizationImage = ImageUtil.binarization(resultImage, Constant.BINARIZATION_THRESH, Constant.BINARIZATION_MAX_VAL)
-        ownFighterName = self.__searchOwnFighterName(binarizationImage)
-        opponentFighterName = self.__searchOpponentFighterName(binarizationImage)
+    def analysisResult(self, resultImage, screenFrame, resultMask) -> SmashBrosResultInfo:
+        maskedResultImage = cv2.bitwise_and(resultImage, resultImage, mask=resultMask)
+        binarizationImage = ImageUtil.binarization(maskedResultImage, Constant.BINARIZATION_THRESH, Constant.BINARIZATION_MAX_VAL)
+        ownFighterName = self.__searchOwnFighterName(binarizationImage, screenFrame)
+        opponentFighterName = self.__searchOpponentFighterName(binarizationImage, screenFrame)
         return SmashBrosResultInfo(ownFighterName, opponentFighterName)
 
-    def __searchOwnFighterName(self, resultImage) -> str:
-        return self.__searchFighterName(resultImage, Constant.OWN_FIGHTER_NAME_RANGE)
+    def __searchOwnFighterName(self, resultImage, screenFrame) -> Optional[str]:
+        return self.__searchFighterName(resultImage, screenFrame, Constant.OWN_FIGHTER_NAME_RANGE)
 
-    def __searchOpponentFighterName(self, resultImage) -> str:
-        return self.__searchFighterName(resultImage, Constant.OPPONENT_FIGHTER_NAME_RANGE)
+    def __searchOpponentFighterName(self, resultImage, screenFrame) -> Optional[str]:
+        return self.__searchFighterName(resultImage, screenFrame, Constant.OPPONENT_FIGHTER_NAME_RANGE)
 
-    def __searchFighterName(self, resultImage, fighterNameRange: Range) -> str:
+    def __searchFighterName(self, resultImage, screenFrame, fighterNameRange: Range) -> Optional[str]:
         # i を1文字として判断させるため、縦方向に膨張
         kernel = np.zeros((5, 5), np.uint8)
         kernel[:, 2] = 1
@@ -59,7 +61,10 @@ class SmashBrosResultAnalyzer:
                     x2, y2, w2, h2 = cv2.boundingRect(contour2)
                     x2 = x2 + x
                     y2 = y2 + y
-                    character = self.__findNearestForCharacterKnn(resultImage, Range(y2, y2 + h2, x2, x2 + w2))
+                    characterRange = Range(y2, y2 + h2, x2, x2 + w2)
+                    if self.isRectangle:
+                        cv2.rectangle(screenFrame, (characterRange.left, characterRange.top), (characterRange.right, characterRange.bottom), (0, 255, 0), 1)
+                    character = self.__findNearestForCharacterKnn(resultImage, characterRange)
                     characterResults.append([x2, y2 + h2, ord(character)])
                 continue
 
@@ -67,13 +72,16 @@ class SmashBrosResultAnalyzer:
             if self.__contourLessThan(contour, 200):
                 continue
 
-            character = self.__findNearestForCharacterKnn(resultImage, Range(y, y + h, x, x + w))
+            characterRange = Range(y, y + h, x, x + w)
+            if self.isRectangle:
+                cv2.rectangle(screenFrame, (characterRange.left, characterRange.top), (characterRange.right, characterRange.bottom), (0, 255, 0), 1)
+            character = self.__findNearestForCharacterKnn(resultImage, characterRange)
             characterResults.append([x, y + h, ord(character)])
 
         return self.__getFighterName(characterResults)
 
-    def __findNearestForCharacterKnn(self, resultImage, resultImageRange: Range) -> str:
-        resizedResultImage = cv2.resize(ImageUtil.cutImage(resultImage, resultImageRange), dsize=(Constant.CHARACTER_IMAGE_WIDTH, Constant.CHARACTER_IMAGE_HEIGHT))
+    def __findNearestForCharacterKnn(self, resultImage, characterRange: Range) -> str:
+        resizedResultImage = cv2.resize(ImageUtil.cutImage(resultImage, characterRange), dsize=(Constant.CHARACTER_IMAGE_WIDTH, Constant.CHARACTER_IMAGE_HEIGHT))
         return self.characterKnn.findNearest(resizedResultImage, Constant.KNN_K)
 
     @staticmethod

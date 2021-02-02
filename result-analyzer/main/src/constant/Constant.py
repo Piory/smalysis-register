@@ -1,4 +1,3 @@
-# クラス定義そのものに対してのsetter制御用メタクラス
 from model.Range import Range
 
 
