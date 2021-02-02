@@ -25,11 +25,11 @@ class CharacterImageGenerator:
         self.images = ImageUtil.loadPngImage(self.characterImagePath, '*.png')
 
 
-for dirName in os.listdir('../../resources'):
+for dirName in os.listdir('../../resources/character'):
     if dirName.startswith('.'):
         continue
     if dirName == 'concat' or dirName == 'Q':
         continue
     print(dirName)
-    characterImageGenerator = CharacterImageGenerator('../../resources/{0}/'.format(dirName))
-    characterImageGenerator.concatCharacterTile(10, '../../resources/concat/{0}.png'.format(dirName))
+    characterImageGenerator = CharacterImageGenerator('../../resources/character/{0}/'.format(dirName))
+    characterImageGenerator.concatCharacterTile(10, '../../resources/character/concat/{0}.png'.format(dirName))
